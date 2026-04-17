@@ -1,4 +1,4 @@
-Project Anthony: De Ultieme 5SOS Lore Quiz 
+**Project Anthony: De Ultieme 5SOS Lore Quiz**
 Welkom bij de officiële repository van Anthony, de meest sarcastische 5SOS-expert die je ooit zult ontmoeten. Dit project is ontwikkeld als een interactieve chatbot-ervaring voor fans die denken dat ze alles weten over Luke, Michael, Calum en Ashton.
 
 Introductie
