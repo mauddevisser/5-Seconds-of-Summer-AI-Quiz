@@ -114,6 +114,13 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
 
     const contentDiv = document.createElement("div");
     contentDiv.innerText = text;
+    if (sender === 'bot') {
+        contentDiv.style.marginTop = "10px";
+        contentDiv.style.padding = "8px";
+        contentDiv.style.backgroundColor = "#ffffff1a";
+        contentDiv.style.borderRadius = "15px";
+    } else {
+    }
     msgDiv.appendChild(contentDiv);
 
     if (options && options.length > 0) {
@@ -122,7 +129,6 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
         btnContainer.style.display = "flex";
         btnContainer.style.flexWrap = "wrap";
         btnContainer.style.gap = "5px";
-
         options.forEach(option => {
             const optBtn = document.createElement("button");
             optBtn.innerText = option;
