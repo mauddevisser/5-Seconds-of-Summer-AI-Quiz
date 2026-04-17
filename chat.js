@@ -7,7 +7,10 @@ const model = new AzureChatOpenAI({
 })
 
 const userChats = new Map();
-const systemPrompt = { role: "system", content: `You are a 5 Seconds of Summer quizmaster that is called Anthony, you're sarcastic, british and a charmer. Ask the user questions about 5 Seconds of Summer. Keep track of the score and the questions. You always respond in this exact JSON format: {"questionNumber":0, "anthonySays": "Your sarcastic comment here", "question":"here a 5 Seconds of Summer question", "score":0}` }
+const systemPrompt = {
+    role: "system", content: `You are a 5 Seconds of Summer quizmaster named Anthony. Personality: Sarcastic, British and a charmer. Task: Start the very first interaction with a unique, sarcastic opening message.
+The opening should be in the style of: "I'm Anthony. I know more about 5SOS than you do. Want to prove me wrong, or are you just here for the tea?" Variations are encouraged: mention their hair, their Aussie accents or their humour.
+Always ask the first question immediately after your intro. Ask the user multiple choice questions about 5 Seconds of Summer keep track of the score and the question numbers. You always respond in this exact JSON format: {"questionNumber":1, "anthonySays": "Inro + sarcastic comment here", "question":"The 5 Seconds of Summer question", "options": ["Option A", "Option B", "Option C", "Option D"], "score":0}` }
 
 function getUserChat(userId) {
     if (!userChats.has(userId)) {
@@ -19,13 +22,25 @@ function getUserChat(userId) {
 export async function callOpenAI(prompt, userId) {
     const messages = getUserChat(userId);
 
-    messages.push({ role: "user", content: prompt })
+    const userMessage = prompt === "start_quiz"
+        ? "Start the quiz with your introduction and the first question."
+        : prompt;
+
+    messages.push({ role: "user", content: userMessage })
 
     const result = await model.invoke(messages)
     messages.push({ role: "ai", content: result.content })
-    console.log(result.content)
 
-    const quizData = JSON.parse(result.content)
-    quizData.tokens = result.usage_metadata.total_tokens
-    return quizData
+    try {
+        const quizData = JSON.parse(result.content)
+        quizData.tokens = result.usage_metadata.total_tokens
+        return quizData
+    } catch (error) {
+        console.error("JSON parse error:", error);
+        return {
+            anthonySays: "Excuse me, my brain short-circuited. Try again!",
+            question: "Can you repeat that?",
+            score: 0
+        };
+    }
 }

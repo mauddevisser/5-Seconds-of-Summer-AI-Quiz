@@ -6,11 +6,6 @@ app.use(express.json())
 
 app.use(express.static("public"))
 
-app.get("/api/test", async (req, res) => {
-    const result = await callOpenAI("Make a joke about swimming")
-    res.json({ response: result })
-})
-
 app.post("/api/chat", async (req, res) => {
     const { prompt, userId } = req.body
     console.log(`user asked for ${prompt}`)

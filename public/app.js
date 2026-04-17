@@ -16,11 +16,46 @@ inputField.addEventListener("keypress", (e) => {
 });
 
 let userId = localStorage.getItem("userid");
-
 if (!userId) {
     userId = crypto.randomUUID();
     localStorage.setItem("userid", userId);
 }
+
+async function startQuiz() {
+    btn.disabled = true;
+
+    try {
+        const response = await fetch("./api/chat", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: "start_quiz", userId })
+        });
+
+        const data = await response.json();
+
+        addMessage(
+            data.question,
+            'bot',
+            true,
+            data.questionNumber,
+            data.anthonySays,
+            data.tokens,
+            data.options
+        );
+
+        if (data.score !== null) {
+            document.querySelector("#current-score").innerText = data.score;
+        }
+
+    } catch (error) {
+        console.error("Fout bij starten quiz:", error);
+        addMessage("Anthony is even niet beschikbaar...", 'bot error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+window.onload = startQuiz;
 
 const data = await fetch("./api/gethistory", {
     method: "POST",
@@ -45,14 +80,8 @@ async function sendChat(prompt) {
             document.querySelector("#current-score").innerText = data.score;
         }
 
-        console.log(data.question)
-        console.log(data.questionNumber)
-        console.log(data.score)
-        console.log(data.tokens)
-        console.log(data.anthonySays)
-
         const htmlResponse = data.question;
-        addMessage(htmlResponse, 'bot', true, data.questionNumber, data.anthonySays, data.tokens);
+        addMessage(htmlResponse, 'bot', true, data.questionNumber, data.anthonySays, data.tokens, data.options);
 
     } catch (error) {
         console.error("Fout:", error);
@@ -63,7 +92,7 @@ async function sendChat(prompt) {
     }
 }
 
-function addMessage(text, sender, isHTML = false, questionNumber = null, anthonySays = false, tokens = null) {
+function addMessage(text, sender, isHTML = false, questionNumber = null, anthonySays = false, tokens = null, options = []) {
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message", sender);
 
@@ -84,15 +113,30 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
     }
 
     const contentDiv = document.createElement("div");
-    if (isHTML) {
-        contentDiv.innerHTML = text;
-        contentDiv.style.marginBottom = "3px";
-    } else {
-        contentDiv.innerText = text;
-        contentDiv.style.marginBottom = "3px";
-    }
+    contentDiv.innerText = text;
     msgDiv.appendChild(contentDiv);
 
+    if (options && options.length > 0) {
+        const btnContainer = document.createElement("div");
+        btnContainer.style.marginTop = "10px";
+        btnContainer.style.display = "flex";
+        btnContainer.style.flexWrap = "wrap";
+        btnContainer.style.gap = "5px";
+
+        options.forEach(option => {
+            const optBtn = document.createElement("button");
+            optBtn.innerText = option;
+            optBtn.classList.add("quiz-option-btn");
+
+            optBtn.onclick = () => {
+                btnContainer.remove();
+                addMessage(option, 'user');
+                sendChat(option);
+            };
+            btnContainer.appendChild(optBtn);
+        });
+        msgDiv.appendChild(btnContainer);
+    }
 
     if (tokens !== null) {
         const tokenLabel = document.createElement("small");
