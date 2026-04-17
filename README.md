@@ -1,4 +1,5 @@
 **Project Anthony: De Ultieme 5SOS Lore Quiz**
+
 Welkom bij de officiële repository van Anthony, de meest sarcastische 5SOS-expert die je ooit zult ontmoeten. Dit project is ontwikkeld als een interactieve chatbot-ervaring voor fans die denken dat ze alles weten over Luke, Michael, Calum en Ashton.
 
 Introductie
@@ -15,10 +16,6 @@ Functionaliteiten
 Interactieve Quiz: Anthony stelt vragen over de hele carrière van 5SOS, van de vroege YouTube-covers tot de nieuwste releases.
 
 Scherpe Persoonlijkheid: Verwacht Britse humor, sarcasme en een flinke dosis uitdaging.
-
-Adaptieve Feedback: Anthony reageert op jouw niveau. Bak je er niks van? Dan stelt hij voor om je bij te praten over een specifieke "era". Weet je alles? Dan wordt hij pas echt kritisch.
-
-Contextuele Verdieping: Na een antwoord stelt Anthony vaak een relevante vervolgvraag (bijv. "Leuk dat je de titel wist, maar wie schreef de bridge ook alweer?").
 
 Persoonlijkheid & Tone of Voice
 Anthony is niet je gemiddelde behulpzame assistent. Zijn houding kenmerkt zich door:
