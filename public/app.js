@@ -1,8 +1,75 @@
-const btn = document.querySelector("#sendBtn");
+const button = document.querySelector("#sendButton");
 const inputField = document.querySelector('#promptInput');
 const chatContainer = document.querySelector("#chat-container");
 
-btn.addEventListener("click", async () => {
+let isMuted = false;
+const muteButton = document.querySelector("#muteButton");
+
+muteButton.addEventListener("click", () => {
+    isMuted = !isMuted;
+
+    if (isMuted) {
+        muteButton.innerText = "Sound Off";
+        muteButton.classList.replace("sound-on", "sound-off");
+        window.speechSynthesis.cancel();
+    } else {
+        muteButton.innerText = "Sound On";
+        muteButton.classList.replace("sound-off", "sound-on");
+    }
+});
+
+function speak(text) {
+    if (isMuted) return;
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    const voices = window.speechSynthesis.getVoices();
+    const britishVoice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
+
+    if (britishVoice) {
+        utterance.voice = britishVoice;
+    }
+
+    utterance.lang = 'en-GB';
+    utterance.pitch = 0.8;
+    utterance.rate = 1.0;
+
+    window.speechSynthesis.speak(utterance);
+}
+
+window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+};
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+
+recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    inputField.value = transcript;
+    button.click();
+};
+
+recognition.onerror = (event) => {
+    console.error("Speechrecognition wrong:", event.error);
+};
+
+const micButton = document.querySelector("#micButton");
+
+micButton.addEventListener("click", () => {
+    recognition.start();
+    micButton.innerText = "Listening...";
+});
+
+recognition.onend = () => {
+    micButton.innerText = "🎤";
+};
+
+button.addEventListener("click", async () => {
     const userPrompt = inputField.value;
     if (!userPrompt) return;
 
@@ -12,7 +79,7 @@ btn.addEventListener("click", async () => {
 });
 
 inputField.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") btn.click();
+    if (e.key === "Enter") button.click();
 });
 
 let userId = localStorage.getItem("userid");
@@ -22,7 +89,7 @@ if (!userId) {
 }
 
 async function startQuiz() {
-    btn.disabled = true;
+    button.disabled = true;
 
     try {
         const response = await fetch("./api/chat", {
@@ -43,19 +110,27 @@ async function startQuiz() {
             data.options
         );
 
+        if (data.anthonySays && data.question) {
+            const fullText = `${data.anthonySays}. Question: ${data.question}`;
+            speak(fullText);
+        }
+
         if (data.score !== null) {
             document.querySelector("#current-score").innerText = data.score;
         }
 
     } catch (error) {
-        console.error("Fout bij starten quiz:", error);
-        addMessage("Anthony is even niet beschikbaar...", 'bot error');
+        console.error("Error while starting quiz:", error);
+        addMessage("Anthony is not working right now", 'bot error');
     } finally {
-        btn.disabled = false;
+        button.disabled = false;
     }
 }
 
-window.onload = startQuiz;
+document.querySelector("#startQuizButton").addEventListener("click", () => {
+    document.querySelector("#start-screen").style.display = "none";
+    startQuiz();
+});
 
 const data = await fetch("./api/gethistory", {
     method: "POST",
@@ -65,8 +140,8 @@ const data = await fetch("./api/gethistory", {
 const history = await data.json()
 
 async function sendChat(prompt) {
-    btn.disabled = true;
-    btn.innerText = "...";
+    button.disabled = true;
+    button.innerText = "...";
 
     try {
         const result = await fetch("./api/chat", {
@@ -76,6 +151,12 @@ async function sendChat(prompt) {
         });
 
         const data = await result.json();
+
+        if (data.anthonySays && data.question) {
+            const fullText = `${data.anthonySays}. Next question: ${data.question}`;
+            speak(fullText);
+        }
+
         if (data.score !== null) {
             document.querySelector("#current-score").innerText = data.score;
         }
@@ -85,23 +166,23 @@ async function sendChat(prompt) {
 
     } catch (error) {
         console.error("Fout:", error);
-        addMessage("Oeps, er ging iets mis.", 'bot error');
+        addMessage("Oops, something went wrong.", 'bot error');
     } finally {
-        btn.disabled = false;
-        btn.innerText = "Send";
+        button.disabled = false;
+        button.innerText = "Send";
     }
 }
 
 function addMessage(text, sender, isHTML = false, questionNumber = null, anthonySays = false, tokens = null, options = []) {
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message", sender);
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender);
 
     if (questionNumber !== null) {
         const questionNumberLabel = document.createElement("strong");
         questionNumberLabel.innerText = `Question ${questionNumber}`;
         questionNumberLabel.style.display = "block";
         questionNumberLabel.style.marginBottom = "5px";
-        msgDiv.appendChild(questionNumberLabel);
+        messageDiv.appendChild(questionNumberLabel);
     }
 
     if (anthonySays) {
@@ -109,7 +190,7 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
         anthonySaysLabel.innerText = `${anthonySays}`;
         anthonySaysLabel.style.display = "block";
         anthonySaysLabel.style.marginBottom = "3px";
-        msgDiv.appendChild(anthonySaysLabel);
+        messageDiv.appendChild(anthonySaysLabel);
     }
 
     const contentDiv = document.createElement("div");
@@ -121,27 +202,27 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
         contentDiv.style.borderRadius = "15px";
     } else {
     }
-    msgDiv.appendChild(contentDiv);
+    messageDiv.appendChild(contentDiv);
 
     if (options && options.length > 0) {
-        const btnContainer = document.createElement("div");
-        btnContainer.style.marginTop = "10px";
-        btnContainer.style.display = "flex";
-        btnContainer.style.flexWrap = "wrap";
-        btnContainer.style.gap = "5px";
+        const buttonContainer = document.createElement("div");
+        buttonContainer.style.marginTop = "10px";
+        buttonContainer.style.display = "flex";
+        buttonContainer.style.flexWrap = "wrap";
+        buttonContainer.style.gap = "5px";
         options.forEach(option => {
-            const optBtn = document.createElement("button");
-            optBtn.innerText = option;
-            optBtn.classList.add("quiz-option-btn");
+            const optionButton = document.createElement("button");
+            optionButton.innerText = option;
+            optionButton.classList.add("quiz-option-button");
 
-            optBtn.onclick = () => {
-                btnContainer.remove();
+            optionButton.onclick = () => {
+                buttonContainer.remove();
                 addMessage(option, 'user');
                 sendChat(option);
             };
-            btnContainer.appendChild(optBtn);
+            buttonContainer.appendChild(optionButton);
         });
-        msgDiv.appendChild(btnContainer);
+        messageDiv.appendChild(buttonContainer);
     }
 
     if (tokens !== null) {
@@ -149,9 +230,9 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
         tokenLabel.innerText = ` (${tokens} Tokens)`;
         tokenLabel.style.display = "block";
         tokenLabel.style.opacity = "0.6";
-        msgDiv.appendChild(tokenLabel);
+        messageDiv.appendChild(tokenLabel);
     }
 
-    chatContainer.appendChild(msgDiv);
+    chatContainer.appendChild(messageDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }

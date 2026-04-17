@@ -1,10 +1,17 @@
 h1 {
     color: #202022;
+    margin-left: 5px;
+}
+
+#startQuizButton {
+    margin-top: -15px;
 }
 
 #score-board {
     color: #202022;
     font-size: large;
+    margin-top: 5px;
+    margin-left: 5px;
 }
 
 body {
@@ -78,7 +85,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.quiz-option-btn {
+.quiz-option-button {
     background-color: #E7EDF3;
     border: 2px solid #202022;
     color: #202022;
@@ -89,7 +96,7 @@ button:disabled {
     margin-bottom: 10px;
 }
 
-.quiz-option-btn:hover {
+.quiz-option-button:hover {
     background-color: #202022;
     color: #E7EDF3;
     border-color: #E7EDF3;
