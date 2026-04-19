@@ -38,3 +38,21 @@ Het project is geslaagd als:
 De gebruiker minstens één keer hardop heeft moeten lachen om een opmerking.
 
 De gebruiker een nieuw feitje over de band heeft geleerd.
+
+Volg deze stappen om het project lokaal te draaien:
+
+Clone de repository
+Open je terminal en voer het volgende commando uit:
+
+git clone https://github.com/mauddevisser/5-Seconds-of-Summer-AI-Quiz.git
+cd project-anthony
+
+npm install
+Anthony heeft een brein nodig (een API-sleutel). Maak een .env bestand aan in de root van je project en voeg daar je credentials toe:
+
+PORT=3000
+AI_API_KEY=jouw_api_sleutel_hier
+Start de server
+
+npm start
+Bezoek daarna http://localhost:3000 in je browser.
