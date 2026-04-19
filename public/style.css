@@ -5,12 +5,13 @@ h1 {
 
 #startQuizButton {
     margin-top: -15px;
+    margin-bottom: 20px;
 }
 
 #score-board {
     color: #202022;
     font-size: large;
-    margin-top: 5px;
+    margin-top: -10px;
     margin-left: 5px;
 }
 

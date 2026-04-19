@@ -194,13 +194,14 @@ function addMessage(text, sender, isHTML = false, questionNumber = null, anthony
     }
 
     const contentDiv = document.createElement("div");
-    contentDiv.innerText = text;
     if (sender === 'bot') {
+        contentDiv.innerHTML = marked.parse(text);
         contentDiv.style.marginTop = "10px";
         contentDiv.style.padding = "8px";
         contentDiv.style.backgroundColor = "#ffffff1a";
         contentDiv.style.borderRadius = "15px";
     } else {
+        contentDiv.innerText = text;
     }
     messageDiv.appendChild(contentDiv);
 
