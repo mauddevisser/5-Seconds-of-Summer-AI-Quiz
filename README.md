@@ -1,6 +1,6 @@
 **Project Anthony: De Ultieme 5SOS Lore Quiz**
 
-Welkom bij de officiële repository van Anthony, de meest sarcastische 5 Seconds of Summer-expert die je ooit zult ontmoeten. Dit project is ontwikkeld als een interactieve chatbot-ervaring voor fans die denken dat ze alles weten over Luke, Michael, Calum en Ashton.
+Welkom bij de officiële repository van Anthony, de sarcastische 5 Seconds of Summer expert. Dit project is ontwikkeld als een interactieve chatbot-ervaring voor fans die denken dat ze alles weten over Luke, Michael, Calum en Ashton.
 
 Introductie
 De meeste muziekquizzes zijn saai en statisch. Ze vragen naar de releasedatum van een album en dat is het wel. Anthony doet het anders. Anthony is een Britse, gevatte AI die niet alleen je kennis test, maar je ook genadeloos belachelijk maakt als je een makkelijke vraag fout hebt. Hij kent de lore, de inside jokes en de tea.
